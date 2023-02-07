@@ -1,29 +1,76 @@
-import React from "react";
-import { Button, Card, Checkbox, Form, Input, Layout } from "antd";
-import { Content } from "antd/es/layout/layout";
-import { deafultColors } from "../../constants/Colors";
+import React from 'react';
+import {
+  Button,
+  Card,
+  Checkbox,
+  Form,
+  Input,
+  Layout,
+  message,
+  Row,
+} from 'antd';
+import { Content } from 'antd/es/layout/layout';
+import { deafultColors } from '../../constants/colors';
+import { useNavigate, useLocation, NavLink } from 'react-router-dom';
+import {
+  useLoginUserMutation,
+  useRegisterUserMutation,
+} from '../../store/api/usersApi';
+import { login } from '../../store/Features/auth';
+import { useDispatch } from 'react-redux';
 
 const Login = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { pathname } = useLocation();
+  const isRegister = pathname === '/register';
+  const [registerUser, { isLoading: isLoadingRegister }] =
+    useRegisterUserMutation();
+  const [loginUser, { isLoading: isLoadingLogin }] = useLoginUserMutation();
+  const isLoading = isLoadingRegister || isLoadingLogin;
+
   const onFinish = (values) => {
-    console.log("Success:", values);
+    if (!isRegister) {
+      loginUser(values).then(({ data }) => {
+        if (data) {
+          message.success(data.message);
+          dispatch(login(data.data));
+          navigate('/');
+        }
+      });
+    }
+
+    if (isRegister) {
+      registerUser(values).then(({ data }) => {
+        if (data) {
+          message.success(data.message);
+          navigate('/login');
+        }
+      });
+    }
   };
+
   const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
+    console.log('Failed:', errorInfo);
   };
+
   return (
     <Layout
-      style={{ minHeight: "100vh", backgroundColor: deafultColors.primary }}
+      style={{ minHeight: '100vh', backgroundColor: deafultColors.primary }}
     >
       <Content
         style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         }}
       >
-        <Card style={{ width: "40rem" }} title="Inicio de sesion">
+        <Card
+          style={{ width: '40rem' }}
+          title={isRegister ? 'Registrar usuario' : 'Iniciar sesión'}
+        >
           <Form
-            name="login"
+            name={isRegister ? 'register' : 'login'}
             labelCol={{
               span: 8,
             }}
@@ -39,21 +86,36 @@ const Login = () => {
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
           >
+            {isRegister && (
+              <Form.Item
+                label="Nombre de usuario"
+                name="name"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Por favor inserta tu nombre de usuario!',
+                  },
+                ]}
+              >
+                <Input placeholder="Nombre de usuario" />
+              </Form.Item>
+            )}
+
             <Form.Item
-              label="Usuario"
-              name="username"
+              label="Correo"
+              name="email"
               rules={[
                 {
                   required: true,
-                  message: "Por favor inserta tu usuario!",
+                  message: 'Por favor inserta tu correo!',
                 },
                 {
-                  pattern: new RegExp("/S+@S+.S+/"),
-                  message: "Ingresa un correo electronico valido!",
+                  type: 'email',
+                  message: 'Ingresa un correo electronico valido!',
                 },
               ]}
             >
-              <Input placeholder="usuario@xxxx.com" />
+              <Input placeholder="usuario@gmail.com" />
             </Form.Item>
 
             <Form.Item
@@ -62,23 +124,24 @@ const Login = () => {
               rules={[
                 {
                   required: true,
-                  message: "Por favor ingresa tu contraseña!",
+                  message: 'Por favor ingresa tu contraseña!',
                 },
               ]}
             >
               <Input.Password placeholder="Contraseña" />
             </Form.Item>
 
-            <Form.Item
-              name="remember"
-              valuePropName="checked"
-              wrapperCol={{
-                offset: 8,
-                span: 16,
-              }}
-            >
-              <Checkbox>Remember me</Checkbox>
-            </Form.Item>
+            <Row justify="space-around" style={{ padding: '1rem 0 1rem 0' }}>
+              <Checkbox>Recordar cuenta</Checkbox>
+              <NavLink
+                to={isRegister ? '/login' : '/register'}
+                style={{ float: 'right' }}
+              >
+                {isRegister
+                  ? '¿Ya tienes una cuenta? Inicia sesion'
+                  : '¿No tienes una cuenta? Registrate'}
+              </NavLink>
+            </Row>
 
             <Form.Item
               wrapperCol={{
@@ -86,8 +149,8 @@ const Login = () => {
                 span: 16,
               }}
             >
-              <Button type="primary" htmlType="submit">
-                Iniciar Sesion
+              <Button type="primary" htmlType="submit" loading={isLoading}>
+                {isRegister ? 'Crear cuenta' : 'Iniciar Sesion'}
               </Button>
             </Form.Item>
           </Form>
@@ -96,4 +159,5 @@ const Login = () => {
     </Layout>
   );
 };
+
 export default Login;

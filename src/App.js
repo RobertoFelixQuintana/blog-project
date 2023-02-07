@@ -1,4 +1,5 @@
-import { Breadcrumb, Layout, Menu, theme } from "antd";
+import { Breadcrumb, Layout, theme } from 'antd';
+import Navigator from './containers/Navigation/Navigator';
 
 const { Header, Content, Footer } = Layout;
 
@@ -6,41 +7,30 @@ const App = () => {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+
   return (
     <Layout className="layout">
       <Header>
-        <div className="logo" />
-        <Menu
-          theme="dark"
-          mode="horizontal"
-          defaultSelectedKeys={["1"]}
-          items={new Array(15).fill(null).map((_, index) => {
-            const key = index + 1;
-            return {
-              key,
-              label: `nav ${key}`,
-            };
-          })}
-        />
+        <Navigator />
       </Header>
       <Content
         style={{
-          padding: "0 50px",
+          padding: '0 50px',
         }}
       >
         <Breadcrumb
           style={{
-            margin: "16px 0",
+            margin: '16px 0',
           }}
         >
           <Breadcrumb.Item>Home</Breadcrumb.Item>
           <Breadcrumb.Item>List</Breadcrumb.Item>
-          <Breadcrumb.Item>App</Breadcrumb.Item>
         </Breadcrumb>
         <div
           className="site-layout-content"
           style={{
             background: colorBgContainer,
+            minHeight: '80.4vh',
           }}
         >
           Content
@@ -48,10 +38,10 @@ const App = () => {
       </Content>
       <Footer
         style={{
-          textAlign: "center",
+          textAlign: 'center',
         }}
       >
-        Ant Design ©2023 Created by Ant UED
+        Forum ©2023 Created by Roberto Felix Jr.
       </Footer>
     </Layout>
   );

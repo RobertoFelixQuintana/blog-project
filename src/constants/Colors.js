@@ -1,3 +1,3 @@
 export const deafultColors = {
-  primary: "#002244",
+  primary: '#002244',
 };

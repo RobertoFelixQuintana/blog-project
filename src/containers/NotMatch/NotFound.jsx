@@ -1,6 +1,6 @@
-import React from "react";
-import { Button, Result } from "antd";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { Button, Result } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 const NotFound = (props) => {
   const navigate = useNavigate();
@@ -10,13 +10,13 @@ const NotFound = (props) => {
       title="404"
       subTitle="Lo sentimos, la página que busca no existe."
       style={{
-        minHeight: "100vh",
-        paddingTop: "23vh",
+        minHeight: '100vh',
+        paddingTop: '23vh',
       }}
       extra={[
         <Button
           onClick={() => {
-            navigate("/");
+            navigate('/');
           }}
           key="backHome"
           type="default"
