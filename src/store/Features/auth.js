@@ -13,19 +13,22 @@ export const authSlice = createSlice({
       state.isLoggedIn = true;
       state.email = action.payload.email;
       state.userName = action.payload.name;
-      state.token = action.payload._id;
       state.created = action.payload.created;
     },
     logout: (state) => {
       state.isLoggedIn = false;
       state.email = null;
       state.userName = 'User';
-      state.token = null;
       state.created = null;
     },
   },
 });
 
 export const { login, logout } = authSlice.actions;
+
+export const selectAuth = (state) => state.auth;
+export const selectIsLoggedIn = (state) => state.auth.isLoggedIn;
+export const selectEmail = (state) => state.auth.email;
+export const selectUserName = (state) => state.auth.userName;
 
 export default authSlice.reducer;

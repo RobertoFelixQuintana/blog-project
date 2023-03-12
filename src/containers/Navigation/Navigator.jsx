@@ -5,14 +5,37 @@ import {
   MenuOutlined,
   LogoutOutlined,
   UserOutlined,
+  DeleteOutlined,
 } from '@ant-design/icons';
 import { NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/Features/auth';
+import secureLocalStorage from 'react-secure-storage';
+import { useDeleteDataMutation } from '../../store/api/usersApi';
+import { persistor } from '../../store/store';
 
 const Navigator = () => {
-  const userName = useSelector((state) => state.auth.userName);
+  const { userName, email } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const [deleteUser] = useDeleteDataMutation();
+
+  const handleLogout = () => {
+    secureLocalStorage.removeItem('@@session');
+    dispatch(logout());
+    persistor.purge();
+    message.success('Sesión cerrada correctamente');
+  };
+
+  const handleDelete = async () => {
+    await deleteUser({
+      params: 'delete',
+      body: {
+        email,
+      },
+    });
+    dispatch(logout());
+    secureLocalStorage.removeItem('@@session');
+  };
 
   const items = [
     {
@@ -71,14 +94,16 @@ const Navigator = () => {
               children: [
                 {
                   label: (
-                    <NavLink
-                      onClick={() => {
-                        dispatch(logout());
-                        message.success('Sesión cerrada correctamente');
-                      }}
-                      to="login"
-                      end
-                    >
+                    <NavLink onClick={() => handleDelete()} to="login" end>
+                      Eliminar cuenta
+                    </NavLink>
+                  ),
+                  key: 'delete',
+                  icon: <DeleteOutlined />,
+                },
+                {
+                  label: (
+                    <NavLink onClick={() => handleLogout()} to="login" end>
                       Cerrar Sesión
                     </NavLink>
                   ),

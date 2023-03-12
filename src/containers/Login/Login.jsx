@@ -1,23 +1,12 @@
 import React from 'react';
-import {
-  Button,
-  Card,
-  Checkbox,
-  Form,
-  Input,
-  Layout,
-  message,
-  Row,
-} from 'antd';
+import { Button, Card, Checkbox, Form, Input, Layout, Row } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import { deafultColors } from '../../constants/colors';
 import { useNavigate, useLocation, NavLink } from 'react-router-dom';
-import {
-  useLoginUserMutation,
-  useRegisterUserMutation,
-} from '../../store/api/usersApi';
+import { usePostDataMutation } from '../../store/api/usersApi';
 import { login } from '../../store/Features/auth';
 import { useDispatch } from 'react-redux';
+import secureLocalStorage from 'react-secure-storage';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -25,25 +14,31 @@ const Login = () => {
   const { pathname } = useLocation();
   const isRegister = pathname === '/register';
   const [registerUser, { isLoading: isLoadingRegister }] =
-    useRegisterUserMutation();
-  const [loginUser, { isLoading: isLoadingLogin }] = useLoginUserMutation();
+    usePostDataMutation();
+  const [loginUser, { isLoading: isLoadingLogin }] = usePostDataMutation();
   const isLoading = isLoadingRegister || isLoadingLogin;
 
-  const onFinish = (values) => {
+  const handleSubmit = (values) => {
     if (!isRegister) {
-      loginUser(values).then(({ data }) => {
-        if (data) {
-          message.success(data.message);
-          dispatch(login(data.data));
+      loginUser({
+        params: 'login',
+        body: values,
+      }).then(({ data }) => {
+        if (data && !data.error) {
+          const { token, ...restResponse } = data.data;
+          dispatch(login(restResponse));
+          secureLocalStorage.setItem('@@session', data?.data);
           navigate('/');
         }
       });
     }
 
     if (isRegister) {
-      registerUser(values).then(({ data }) => {
-        if (data) {
-          message.success(data.message);
+      registerUser({
+        params: 'register',
+        body: values,
+      }).then(({ data }) => {
+        if (data && !data.error) {
           navigate('/login');
         }
       });
@@ -83,7 +78,6 @@ const Login = () => {
             initialValues={{
               remember: true,
             }}
-            onFinish={onFinish}
             onFinishFailed={onFinishFailed}
           >
             {isRegister && (
@@ -149,8 +143,12 @@ const Login = () => {
                 span: 16,
               }}
             >
-              <Button type="primary" htmlType="submit" loading={isLoading}>
-                {isRegister ? 'Crear cuenta' : 'Iniciar Sesion'}
+              <Button
+                type="primary"
+                onClick={() => handleSubmit()}
+                loading={isLoading}
+              >
+                {isRegister ? 'Crear cuenta' : 'Inicio de sesión'}
               </Button>
             </Form.Item>
           </Form>
