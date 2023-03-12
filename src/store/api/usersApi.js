@@ -20,7 +20,7 @@ const getDefaultCredentials = () => {
   return headers;
 };
 
-const baseUrl = 'http://localhost:3001/api/';
+const baseUrl = 'http://localhost:3001/api';
 // Define a service using a base URL and expected endpoints
 export const usersApi = createApi({
   reducerPath: 'usersApi',

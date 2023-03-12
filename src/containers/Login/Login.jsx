@@ -12,13 +12,18 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { pathname } = useLocation();
-  const isRegister = pathname === '/register';
+
   const [registerUser, { isLoading: isLoadingRegister }] =
     usePostDataMutation();
   const [loginUser, { isLoading: isLoadingLogin }] = usePostDataMutation();
+
+  const [form] = Form.useForm();
+
+  const isRegister = pathname === '/register';
   const isLoading = isLoadingRegister || isLoadingLogin;
 
-  const handleSubmit = (values) => {
+  const handleSubmit = async () => {
+    const values = await form.validateFields();
     if (!isRegister) {
       loginUser({
         params: 'login',
@@ -43,10 +48,6 @@ const Login = () => {
         }
       });
     }
-  };
-
-  const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
   };
 
   return (
@@ -78,7 +79,7 @@ const Login = () => {
             initialValues={{
               remember: true,
             }}
-            onFinishFailed={onFinishFailed}
+            form={form}
           >
             {isRegister && (
               <Form.Item
