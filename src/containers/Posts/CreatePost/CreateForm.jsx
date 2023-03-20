@@ -1,16 +1,18 @@
-import { Form, Input, Button, Card } from 'antd';
-import { UserOutlined, FormOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Checkbox } from 'antd';
+import { FormOutlined } from '@ant-design/icons';
+import Container from '../../../components/Container/Container';
+import Title from 'antd/es/typography/Title';
 
-const ProblemForm = ({ onAdd }) => {
+const PostForm = () => {
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
-    onAdd(values);
     form.resetFields();
   };
 
   return (
-    <Card>
+    <Container>
+      <Title level={3}>Crear nueva publicación</Title>
       <Form form={form} onFinish={onFinish}>
         <Form.Item
           name="title"
@@ -19,12 +21,6 @@ const ProblemForm = ({ onAdd }) => {
           ]}
         >
           <Input placeholder="Title" prefix={<FormOutlined />} />
-        </Form.Item>
-        <Form.Item
-          name="createdBy"
-          rules={[{ required: true, message: 'Please input your name!' }]}
-        >
-          <Input placeholder="Name" prefix={<UserOutlined />} />
         </Form.Item>
         <Form.Item
           name="description"
@@ -37,14 +33,17 @@ const ProblemForm = ({ onAdd }) => {
         >
           <Input.TextArea placeholder="Description" />
         </Form.Item>
+        <Form.Item name="anonymous" valuePropName="checked">
+          <Checkbox>Publicar de forma anónima</Checkbox>
+        </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Add Problem
+            Agregar publicación
           </Button>
         </Form.Item>
       </Form>
-    </Card>
+    </Container>
   );
 };
 
-export default ProblemForm;
+export default PostForm;

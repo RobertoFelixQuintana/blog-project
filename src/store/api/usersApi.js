@@ -3,6 +3,7 @@ import { message } from 'antd';
 
 import secureLocalStorage from 'react-secure-storage';
 
+// Define a default credentials object
 const getDefaultCredentials = () => {
   const headers = {
     Authorization: '',

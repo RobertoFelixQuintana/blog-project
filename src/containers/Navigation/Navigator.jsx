@@ -7,7 +7,7 @@ import {
   UserOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/Features/auth';
 import secureLocalStorage from 'react-secure-storage';
@@ -15,8 +15,10 @@ import { useDeleteDataMutation } from '../../store/api/usersApi';
 import { persistor } from '../../store/store';
 
 const Navigator = () => {
-  const { userName, email } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const location = useLocation();
+  const { userName, email } = useSelector((state) => state.auth);
+
   const [deleteUser] = useDeleteDataMutation();
 
   const handleLogout = () => {
@@ -39,20 +41,29 @@ const Navigator = () => {
 
   const items = [
     {
-      label: 'Tasks',
       key: 'app',
-      icon: <AppstoreOutlined />,
-      disabled: true,
+      icon: (
+        <>
+          <AppstoreOutlined />{' '}
+          <NavLink to="/" state={{ from: location }}>
+            Home
+          </NavLink>
+        </>
+      ),
     },
     {
-      label: (
-        <a href="https://ant.design" target="_blank" rel="noopener noreferrer">
-          Link
-        </a>
+      key: 'create-post',
+      icon: (
+        <>
+          <AppstoreOutlined />{' '}
+          <NavLink to="/create-post" state={{ from: location }}>
+            Crear Post
+          </NavLink>
+        </>
       ),
-      key: 'alipay',
     },
   ];
+
   return (
     <Row justify={'end'}>
       <Col span={12}>
@@ -94,8 +105,8 @@ const Navigator = () => {
               children: [
                 {
                   label: (
-                    <NavLink onClick={() => handleDelete()} to="login" end>
-                      Eliminar cuenta
+                    <NavLink onClick={() => handleDelete()} to="/login" end>
+                      Configurar cuenta - Eliminar cuenta
                     </NavLink>
                   ),
                   key: 'delete',
@@ -103,7 +114,7 @@ const Navigator = () => {
                 },
                 {
                   label: (
-                    <NavLink onClick={() => handleLogout()} to="login" end>
+                    <NavLink onClick={() => handleLogout()} to="/login" end>
                       Cerrar Sesión
                     </NavLink>
                   ),
