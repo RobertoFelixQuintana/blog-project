@@ -8,10 +8,18 @@ import { logout } from '../../store/Features/auth';
 
 const { Header, Content, Footer } = Layout;
 
+function getTitleFromPathname(pathname) {
+  const path = pathname.split('/')[1];
+  const text = path.replace(/-/g, ' ');
+  return text?.substring(0, 1).toUpperCase() + text?.substring(1);
+}
+
 const Container = ({ children }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const sentence = getTitleFromPathname(location.pathname);
 
   const session = secureLocalStorage.getItem('@@session');
 
@@ -34,11 +42,7 @@ const Container = ({ children }) => {
       >
         <Breadcrumb style={{ margin: '16px 0' }}>
           <Breadcrumb.Item>Home</Breadcrumb.Item>
-          {location.pathname === '/' ? (
-            <Breadcrumb.Item>List</Breadcrumb.Item>
-          ) : (
-            <Breadcrumb.Item>Create post</Breadcrumb.Item>
-          )}
+          <Breadcrumb.Item>{sentence}</Breadcrumb.Item>
         </Breadcrumb>
         <Card
           style={{

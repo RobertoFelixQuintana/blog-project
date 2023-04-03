@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { message } from 'antd';
-
 import secureLocalStorage from 'react-secure-storage';
 
 // Define a default credentials object
@@ -27,6 +26,33 @@ export const usersApi = createApi({
   reducerPath: 'usersApi',
   baseQuery: fetchBaseQuery({ baseUrl }),
   endpoints: (builder) => ({
+    getData: builder.query({
+      query: ({ params }) => ({
+        url: `${baseUrl}/${params}`,
+        method: 'GET',
+        headers: getDefaultCredentials(),
+      }),
+      transformResponse: (response) => {
+        if (response.error) {
+          message.error(response?.message);
+        }
+        return response;
+      },
+    }),
+    putData: builder.mutation({
+      query: ({ params, body }) => ({
+        url: `${baseUrl}/${params}`,
+        method: 'PUT',
+        body,
+        headers: getDefaultCredentials(),
+      }),
+      transformResponse: (response) => {
+        if (!response.error) {
+          message.success(response?.message);
+        }
+        return response;
+      },
+    }),
     postData: builder.mutation({
       query: ({ params, body }) => ({
         url: `${baseUrl}/${params}`,
@@ -60,4 +86,10 @@ export const usersApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { usePostDataMutation, useDeleteDataMutation } = usersApi;
+export const {
+  usePostDataMutation,
+  useDeleteDataMutation,
+  useGetDataQuery,
+  useLazyGetDataQuery,
+  usePutDataMutation,
+} = usersApi;

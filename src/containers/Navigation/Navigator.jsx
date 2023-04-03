@@ -6,6 +6,8 @@ import {
   LogoutOutlined,
   UserOutlined,
   DeleteOutlined,
+  AppstoreAddOutlined,
+  UnorderedListOutlined,
 } from '@ant-design/icons';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -52,10 +54,21 @@ const Navigator = () => {
       ),
     },
     {
+      key: 'posts',
+      icon: (
+        <>
+          <UnorderedListOutlined />{' '}
+          <NavLink to="/posts" state={{ from: location }}>
+            Publicaciones
+          </NavLink>
+        </>
+      ),
+    },
+    {
       key: 'create-post',
       icon: (
         <>
-          <AppstoreOutlined />{' '}
+          <AppstoreAddOutlined />{' '}
           <NavLink to="/create-post" state={{ from: location }}>
             Crear Post
           </NavLink>
