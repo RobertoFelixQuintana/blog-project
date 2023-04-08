@@ -5,8 +5,14 @@ const styleCursor = {
   cursor: 'pointer',
 };
 
-const IconText = ({ icon, text, onClick }) => (
-  <Space onClick={onClick} style={styleCursor}>
+const IconText = ({ icon, text, onClick, color }) => (
+  <Space
+    onClick={onClick}
+    style={{
+      ...styleCursor,
+      color,
+    }}
+  >
     {React.createElement(icon)}
     {text}
   </Space>

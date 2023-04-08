@@ -1,18 +1,13 @@
-import { Divider, List, Typography } from 'antd';
 import React from 'react';
-import Container from '../../../components/Container/Container';
-import initDayjs from '../../../helpers/configDayjs';
-import dayjs from 'dayjs';
-import { formatDates } from '../../../constants/dates';
-import { LikeOutlined, MessageOutlined, LikeFilled } from '@ant-design/icons';
-import {
-  useGetDataQuery,
-  usePutDataMutation,
-} from '../../../store/api/usersApi';
 import { useSelector } from 'react-redux';
-import { selectId } from '../../../store/Features/auth';
 import { useNavigate } from 'react-router-dom';
-import IconText from '../../../components/Container/IconText';
+import { Badge, Divider, List, Typography } from 'antd';
+import dayjs from 'dayjs';
+import { LikeOutlined, MessageOutlined, LikeFilled } from '@ant-design/icons';
+import { formatDates } from '../../../src/constants/dates';
+import IconText from '../../components/Container/IconText';
+import { selectId } from '../../store/Features/auth';
+import { usePutDataMutation } from '../../store/api/usersApi';
 
 const { Title, Text } = Typography;
 
@@ -20,55 +15,39 @@ const styleItem = {
   padding: '2rem',
   border: '1px solid #d9d9d9',
   borderRadius: '4px',
-  margin: '2rem 1rem 2rem 1rem',
+  margin: '2rem 0 2rem 0',
 };
 
 const styleCursor = {
   cursor: 'pointer',
 };
 
-const ListPosts = () => {
+function ListPost({ title, issuesData, postsLoading, refetch }) {
   const navigate = useNavigate();
   const id = useSelector(selectId);
 
-  const {
-    data,
-    refetch,
-    isLoading: postsLoading,
-  } = useGetDataQuery({
-    params: 'get-posts',
-  });
-  const [setLike, { isLoading: likeLoading }] = usePutDataMutation();
-
-  const [issuesData, setIssuesData] = React.useState([]);
   const [showCommentByPost, setShowCommentByPost] = React.useState(null);
+  const [setLike, { isLoading: likeLoading }] = usePutDataMutation();
 
   const loading = postsLoading || likeLoading;
 
-  React.useEffect(() => {
-    initDayjs();
-    refetch();
-  }, [refetch]);
-
-  React.useEffect(() => {
-    if (data?.data.length) {
-      setIssuesData(data?.data);
-    }
-  }, [data]);
-
   return (
-    <Container>
-      <List
-        header={<Title level={2}>Publicaciones</Title>}
-        dataSource={issuesData}
-        size="large"
-        bordered={false}
-        loading={loading}
-        renderItem={(problem) => (
+    <List
+      header={<Title level={2}>{title}</Title>}
+      dataSource={issuesData}
+      size="large"
+      bordered={false}
+      loading={loading}
+      renderItem={(problem) => (
+        <Badge.Ribbon
+          text={problem?.active ? 'Post activo' : 'Resuelta'}
+          color={problem?.active ? 'blue' : 'green'}
+        >
           <List.Item
             style={styleItem}
             actions={[
               <IconText
+                color={problem?.likes.includes(id) ? 'blue' : 'black'}
                 icon={problem?.likes.includes(id) ? LikeFilled : LikeOutlined}
                 text={problem?.likes?.length}
                 key="list-vertical-like-o"
@@ -87,6 +66,7 @@ const ListPosts = () => {
                 }}
               />,
               <IconText
+                color="black"
                 icon={MessageOutlined}
                 text={problem?.comments?.length}
                 key="list-vertical-message"
@@ -120,8 +100,8 @@ const ListPosts = () => {
                 <Divider orientation="left">Comentarios</Divider>
                 {problem?.comments?.length ? (
                   <ul style={{ listStyleType: 'none' }}>
-                    {problem?.comments?.map((comment) => (
-                      <li key={comment.id}>
+                    {problem?.comments?.map((comment, idx) => (
+                      <li key={`${comment.id}${idx}`}>
                         @{comment.author}: {comment.comment}
                       </li>
                     ))}
@@ -132,10 +112,10 @@ const ListPosts = () => {
               </>
             )}
           </List.Item>
-        )}
-      />
-    </Container>
+        </Badge.Ribbon>
+      )}
+    />
   );
-};
+}
 
-export default ListPosts;
+export default ListPost;

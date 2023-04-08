@@ -1,7 +1,12 @@
 import React from 'react';
+import initDayjs from '../src/helpers/configDayjs';
 import Container from './components/Container/Container';
 
 function App() {
+  React.useEffect(() => {
+    initDayjs();
+  }, []);
+
   return (
     <Container>
       <h1>Datos de la empresa:</h1>

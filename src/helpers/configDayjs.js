@@ -6,6 +6,7 @@ import isBetween from 'dayjs/plugin/isBetween';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import minMax from 'dayjs/plugin/minMax';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 
@@ -23,6 +24,7 @@ const initDayjs = () => {
   dayjs.extend(isBetween);
   dayjs.extend(isSameOrBefore);
   dayjs.locale('es');
+  dayjs.extend(relativeTime);
   dayjs.tz.setDefault('America/Los_Angeles');
 
   return dayjs;

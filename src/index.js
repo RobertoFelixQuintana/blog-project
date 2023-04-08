@@ -9,8 +9,10 @@ import { persistor, store } from './store/store';
 import { Provider } from 'react-redux';
 import NotFound from './containers/NotMatch/NotFound.jsx';
 import PostForm from './containers/Posts/CreatePost/CreateForm';
-import ListPosts from './containers/Posts/ListPost/ListPosts';
+import AllPosts from './containers/Posts/ListPost/AllPosts';
 import ViewPost from './containers/Posts/ViewPost/ViewPost';
+import MyPosts from './containers/Posts/MyPosts/MyPosts';
+import ControlPanel from './containers/ControlPanel/ControlPanel';
 import App from './App';
 import './index.css';
 
@@ -26,11 +28,12 @@ root.render(
           </Route>
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<App />} />
-            <Route path="posts" element={<ListPosts />} />
+            <Route path="my-posts" element={<MyPosts />} />
+            <Route path="posts" element={<AllPosts />} />
             <Route path="create-post" element={<PostForm />} />
             <Route path="edit-post/:id" element={<PostForm />} />
             <Route path="view-post/:id" element={<ViewPost />} />
-            <Route path="edit-account" element={<>Configuracion cuenta</>} />
+            <Route path="edit-account" element={<ControlPanel />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

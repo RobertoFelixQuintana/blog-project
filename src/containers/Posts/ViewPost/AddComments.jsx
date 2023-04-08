@@ -1,7 +1,10 @@
 import { Button, Checkbox, Form, Input, Row, Space } from 'antd';
-import { PlusOutlined, CheckOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import React from 'react';
-import { usePostDataMutation } from '../../../store/api/usersApi';
+import {
+  usePostDataMutation,
+  usePutDataMutation,
+} from '../../../store/api/usersApi';
 import { useSelector } from 'react-redux';
 import { selectId } from '../../../store/Features/auth';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -10,14 +13,18 @@ const initialValues = {
   comment: '',
   anonymous: false,
 };
-function AddComments({ refetch, sameUser }) {
+function AddComments({ refetch, sameUser, issue }) {
   const { id } = useParams();
   const userId = useSelector(selectId);
   const navigate = useNavigate();
 
   const [form] = Form.useForm();
 
-  const [addComent] = usePostDataMutation();
+  const [addComment, { isLoading: loadingComment }] = usePostDataMutation();
+  const [setActivePost, { isLoading: loadingActivePost }] =
+    usePutDataMutation();
+
+  const loading = loadingComment || loadingActivePost;
 
   const handleSubmit = async () => {
     const values = await form.validateFields();
@@ -27,7 +34,7 @@ function AddComments({ refetch, sameUser }) {
     values.userId = userId;
     values.issuesId = id;
 
-    const response = await addComent({
+    const response = await addComment({
       params: 'new-comment',
       body: values,
     });
@@ -38,6 +45,22 @@ function AddComments({ refetch, sameUser }) {
     }
   };
 
+  const handleActivePost = async () => {
+    const values = { ...issue };
+    values.id = id;
+    values.active = !values.active;
+
+    const response = await setActivePost({
+      params: `edit-post`,
+      body: values,
+    });
+
+    if ('data' in response && !response?.data?.error) {
+      refetch();
+      navigate(-1);
+    }
+  };
+
   return (
     <Form
       layout="horizontal"
@@ -45,7 +68,11 @@ function AddComments({ refetch, sameUser }) {
       initialValues={initialValues}
       form={form}
     >
-      <Row justify="space-between" style={{ padding: '.5rem 0 .5rem 0' }}>
+      <Row
+        justify="space-between"
+        style={{ padding: '.5rem 0 .5rem 0' }}
+        align="middle"
+      >
         <Space size="middle" direction="horizontal">
           <Form.Item noStyle>
             <Button type="default" onClick={() => navigate(-1)}>
@@ -58,6 +85,7 @@ function AddComments({ refetch, sameUser }) {
               onClick={handleSubmit}
               icon={<PlusOutlined />}
               ghost
+              loading={loading}
             >
               Agregar comentario
             </Button>
@@ -65,11 +93,11 @@ function AddComments({ refetch, sameUser }) {
           {sameUser && (
             <Form.Item noStyle>
               <Button
-                danger
-                onClick={() => console.log('resuelto')}
-                icon={<CheckOutlined />}
+                type="primary"
+                onClick={() => handleActivePost()}
+                loading={loading}
               >
-                Marcar como resuelto
+                {issue?.active ? 'Marcar post resuelto' : 'Marcar post activo'}
               </Button>
             </Form.Item>
           )}

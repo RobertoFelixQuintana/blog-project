@@ -17,6 +17,8 @@ import {
 import { useSelector } from 'react-redux';
 import { selectId } from '../../../store/Features/auth';
 import AddComments from './AddComments';
+import dayjs from 'dayjs';
+import './ViewPost.css';
 
 const { Text } = Typography;
 
@@ -38,6 +40,8 @@ function ViewPost() {
   const loading = postLoading || likeLoading;
   const sameUser = userId === issue?.user;
 
+  const actualDate = dayjs(); // Obtener la fecha actual
+
   return (
     <Container>
       <Badge.Ribbon
@@ -57,12 +61,16 @@ function ViewPost() {
               {issue?.comments?.length ? (
                 <ul style={{ listStyleType: 'none' }}>
                   {issue?.comments?.map((comment) => (
-                    <li key={comment._id}>
-                      <Space size="large">
+                    <li key={comment._id} className="comment-issue">
+                      <Row justify="space-between">
                         <Text>
-                          @{comment.author}: {comment.comment}
+                          <b>
+                            @{comment.author}: {comment.comment}
+                          </b>{' '}
+                          Comentado hace:{' '}
+                          {actualDate.diff(comment.created, 'hour')} hrs
                         </Text>
-                        {sameUser && (
+                        {userId === comment?.user && (
                           <DeleteOutlined
                             style={{ color: 'red' }}
                             onClick={async () => {
@@ -78,16 +86,17 @@ function ViewPost() {
                             }}
                           />
                         )}
-                      </Space>
+                      </Row>
                     </li>
                   ))}
                 </ul>
               ) : (
                 <Text type="secondary">No hay comentarios</Text>
               )}
-              <Row justify="end">
+              <Row justify="end" style={{ padding: '.5rem 0 .5rem 0' }}>
                 <Space size="middle">
                   <IconText
+                    color={issue?.likes.includes(userId) ? 'blue' : 'black'}
                     icon={
                       issue?.likes.includes(userId) ? LikeFilled : LikeOutlined
                     }
@@ -118,7 +127,11 @@ function ViewPost() {
                 </Space>
               </Row>
               <Row style={{ width: '100%', marginTop: '1.5rem' }} wrap={false}>
-                <AddComments refetch={refetch} sameUser={sameUser} />
+                <AddComments
+                  refetch={refetch}
+                  sameUser={sameUser}
+                  issue={issue}
+                />
               </Row>
             </>
           )}

@@ -40,22 +40,20 @@ const PostForm = () => {
       >
         <Form.Item
           name="title"
-          rules={[
-            { required: true, message: 'Please input the problem title!' },
-          ]}
+          rules={[{ required: true, message: 'Por favor agrega un titulo!' }]}
         >
-          <Input placeholder="Title" prefix={<FormOutlined />} />
+          <Input placeholder="Titulo" prefix={<FormOutlined />} />
         </Form.Item>
         <Form.Item
           name="description"
           rules={[
             {
               required: true,
-              message: 'Please input the problem description!',
+              message: 'Por favor agrega una descripción!',
             },
           ]}
         >
-          <Input.TextArea placeholder="Description" />
+          <Input.TextArea placeholder="Descripción" />
         </Form.Item>
         <Form.Item name="anonymous" valuePropName="checked">
           <Checkbox>Publicar de forma anónima</Checkbox>

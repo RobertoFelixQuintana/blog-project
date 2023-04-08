@@ -1,11 +1,11 @@
 import React from 'react';
 import { Col, Menu, message, Row, Typography } from 'antd';
 import {
-  AppstoreOutlined,
+  HomeOutlined,
   MenuOutlined,
   LogoutOutlined,
   UserOutlined,
-  DeleteOutlined,
+  ToolOutlined,
   AppstoreAddOutlined,
   UnorderedListOutlined,
 } from '@ant-design/icons';
@@ -13,15 +13,12 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/Features/auth';
 import secureLocalStorage from 'react-secure-storage';
-import { useDeleteDataMutation } from '../../store/api/usersApi';
 import { persistor } from '../../store/store';
 
 const Navigator = () => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const { userName, email } = useSelector((state) => state.auth);
-
-  const [deleteUser] = useDeleteDataMutation();
+  const { userName } = useSelector((state) => state.auth);
 
   const handleLogout = () => {
     secureLocalStorage.removeItem('@@session');
@@ -30,23 +27,12 @@ const Navigator = () => {
     message.success('Sesión cerrada correctamente');
   };
 
-  const handleDelete = async () => {
-    await deleteUser({
-      params: 'delete',
-      body: {
-        email,
-      },
-    });
-    dispatch(logout());
-    secureLocalStorage.removeItem('@@session');
-  };
-
   const items = [
     {
       key: 'app',
       icon: (
         <>
-          <AppstoreOutlined />{' '}
+          <HomeOutlined />{' '}
           <NavLink to="/" state={{ from: location }}>
             Home
           </NavLink>
@@ -60,6 +46,17 @@ const Navigator = () => {
           <UnorderedListOutlined />{' '}
           <NavLink to="/posts" state={{ from: location }}>
             Publicaciones
+          </NavLink>
+        </>
+      ),
+    },
+    {
+      key: 'my-posts',
+      icon: (
+        <>
+          <UnorderedListOutlined />{' '}
+          <NavLink to="/my-posts" state={{ from: location }}>
+            Mis Publicaciones
           </NavLink>
         </>
       ),
@@ -118,12 +115,12 @@ const Navigator = () => {
               children: [
                 {
                   label: (
-                    <NavLink onClick={() => handleDelete()} to="/login" end>
-                      Configurar cuenta - Eliminar cuenta
+                    <NavLink to="/edit-account" end>
+                      Configurar cuenta
                     </NavLink>
                   ),
                   key: 'delete',
-                  icon: <DeleteOutlined />,
+                  icon: <ToolOutlined />,
                 },
                 {
                   label: (
