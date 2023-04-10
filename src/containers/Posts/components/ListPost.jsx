@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { Badge, Divider, List, Typography } from 'antd';
 import dayjs from 'dayjs';
 import { LikeOutlined, MessageOutlined, LikeFilled } from '@ant-design/icons';
-import { formatDates } from '../../../src/constants/dates';
-import IconText from '../../components/Container/IconText';
-import { selectId } from '../../store/Features/auth';
-import { usePutDataMutation } from '../../store/api/usersApi';
+import { formatDates } from '../../../constants/dates';
+import IconText from '../../../components/IconText/IconText';
+import { selectId } from '../../../store/Features/auth';
+import { usePutDataMutation } from '../../../store/api/usersApi';
 
 const { Title, Text } = Typography;
 

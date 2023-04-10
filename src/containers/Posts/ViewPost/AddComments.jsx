@@ -6,7 +6,7 @@ import {
   usePutDataMutation,
 } from '../../../store/api/usersApi';
 import { useSelector } from 'react-redux';
-import { selectId } from '../../../store/Features/auth';
+import { selectEmail, selectId } from '../../../store/Features/auth';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const initialValues = {
@@ -17,6 +17,7 @@ function AddComments({ refetch, sameUser, issue }) {
   const { id } = useParams();
   const userId = useSelector(selectId);
   const navigate = useNavigate();
+  const email = useSelector(selectEmail);
 
   const [form] = Form.useForm();
 
@@ -49,6 +50,7 @@ function AddComments({ refetch, sameUser, issue }) {
     const values = { ...issue };
     values.id = id;
     values.active = !values.active;
+    values.email = email;
 
     const response = await setActivePost({
       params: `edit-post`,
@@ -91,15 +93,28 @@ function AddComments({ refetch, sameUser, issue }) {
             </Button>
           </Form.Item>
           {sameUser && (
-            <Form.Item noStyle>
-              <Button
-                type="primary"
-                onClick={() => handleActivePost()}
-                loading={loading}
-              >
-                {issue?.active ? 'Marcar post resuelto' : 'Marcar post activo'}
-              </Button>
-            </Form.Item>
+            <>
+              <Form.Item noStyle>
+                <Button
+                  type="primary"
+                  onClick={() => handleActivePost()}
+                  loading={loading}
+                >
+                  {issue?.active
+                    ? 'Marcar post resuelto'
+                    : 'Marcar post activo'}
+                </Button>
+              </Form.Item>
+              <Form.Item noStyle>
+                <Button
+                  type="primary"
+                  onClick={() => navigate(`/edit-post/${id}`)}
+                  loading={loading}
+                >
+                  Editar post
+                </Button>
+              </Form.Item>
+            </>
           )}
         </Space>
 

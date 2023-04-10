@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Container from '../../../components/Container/Container';
-import { Badge, Card, Divider, Row, Space, Typography } from 'antd';
+import { Badge, Card, Col, Divider, Row, Space, Typography } from 'antd';
 import { useParams } from 'react-router-dom';
 import {
   useDeleteDataMutation,
   useGetDataQuery,
   usePutDataMutation,
 } from '../../../store/api/usersApi';
-import IconText from '../../../components/Container/IconText';
+import IconText from '../../../components/IconText/IconText';
 import {
   LikeOutlined,
   MessageOutlined,
@@ -42,6 +42,19 @@ function ViewPost() {
 
   const actualDate = dayjs(); // Obtener la fecha actual
 
+  const getDaysByHours = (hours) => {
+    const days = Math.floor(hours / 24);
+    const hoursLeft = hours % 24;
+    if (days === 0) {
+      return `${hoursLeft}hrs`;
+    }
+    return `${days}d ${hoursLeft}hrs`;
+  };
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
   return (
     <Container>
       <Badge.Ribbon
@@ -62,30 +75,44 @@ function ViewPost() {
                 <ul style={{ listStyleType: 'none' }}>
                   {issue?.comments?.map((comment) => (
                     <li key={comment._id} className="comment-issue">
-                      <Row justify="space-between">
-                        <Text>
-                          <b>
-                            @{comment.author}: {comment.comment}
-                          </b>{' '}
-                          Comentado hace:{' '}
-                          {actualDate.diff(comment.created, 'hour')} hrs
-                        </Text>
-                        {userId === comment?.user && (
-                          <DeleteOutlined
-                            style={{ color: 'red' }}
-                            onClick={async () => {
-                              const response = await deleteComment({
-                                params: `delete-comment/${comment?._id}`,
-                              });
-                              if (
-                                'data' in response &&
-                                !response?.data?.error
-                              ) {
-                                refetch();
-                              }
-                            }}
-                          />
-                        )}
+                      <Row>
+                        <Col flex="90%">
+                          <Text>
+                            <b>
+                              @{comment.author}: {comment.comment}
+                            </b>{' '}
+                            Comentado hace:{' '}
+                            {getDaysByHours(
+                              actualDate.diff(comment.created, 'hour')
+                            )}
+                          </Text>
+                        </Col>
+                        <Col
+                          flex="10%"
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            alignContent: 'center',
+                            alignItems: 'center',
+                          }}
+                        >
+                          {userId === comment?.user && (
+                            <DeleteOutlined
+                              style={{ color: 'red' }}
+                              onClick={async () => {
+                                const response = await deleteComment({
+                                  params: `delete-comment/${comment?._id}`,
+                                });
+                                if (
+                                  'data' in response &&
+                                  !response?.data?.error
+                                ) {
+                                  refetch();
+                                }
+                              }}
+                            />
+                          )}
+                        </Col>
                       </Row>
                     </li>
                   ))}

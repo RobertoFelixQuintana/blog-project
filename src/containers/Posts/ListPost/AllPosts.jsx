@@ -1,7 +1,7 @@
 import React from 'react';
 import Container from '../../../components/Container/Container';
 import { useGetDataQuery } from '../../../store/api/usersApi';
-import ListPost from '../../../components/Container/ListPost';
+import ListPost from '../components/ListPost';
 
 const AllPosts = () => {
   const {

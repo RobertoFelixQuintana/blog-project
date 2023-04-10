@@ -14,7 +14,7 @@ function getTitleFromPathname(pathname) {
   return text?.substring(0, 1).toUpperCase() + text?.substring(1);
 }
 
-const Container = ({ children }) => {
+const Container = ({ children, loading }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,6 +49,7 @@ const Container = ({ children }) => {
             minHeight: '80.4vh',
             padding: '1.5rem',
           }}
+          loading={loading}
         >
           {children}
         </Card>

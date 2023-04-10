@@ -2,24 +2,46 @@ import { Form, Input, Button, Checkbox, Space, Row } from 'antd';
 import { FormOutlined } from '@ant-design/icons';
 import Container from '../../../components/Container/Container';
 import Title from 'antd/es/typography/Title';
-import { usePostDataMutation } from '../../../store/api/usersApi';
+import {
+  useLazyGetDataQuery,
+  usePostDataMutation,
+  usePutDataMutation,
+} from '../../../store/api/usersApi';
 import { useSelector } from 'react-redux';
 import { selectEmail } from '../../../store/Features/auth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const PostForm = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
   const userEmail = useSelector(selectEmail);
   const [form] = Form.useForm();
 
-  const [post, { isLoading }] = usePostDataMutation();
+  const [getIssue, { isLoading: loadingGet }] = useLazyGetDataQuery();
+  const [post, { isLoading: loadingPost }] = usePostDataMutation();
+  const [put, { isLoading: loadingPut }] = usePutDataMutation();
+
+  const isLoading = loadingPost || loadingPut || loadingGet;
 
   const handleSubmit = async () => {
     const values = await form.validateFields();
     values.email = userEmail;
 
-    const response = await post({
-      params: 'save-posts',
+    let action;
+    let urlAction;
+
+    if (id) {
+      action = put;
+      urlAction = 'edit-post';
+      values.id = id;
+    } else {
+      action = post;
+      urlAction = 'save-posts';
+    }
+
+    const response = await action({
+      params: urlAction,
       body: values,
     });
 
@@ -29,9 +51,25 @@ const PostForm = () => {
     }
   };
 
+  useEffect(() => {
+    if (id) {
+      getIssue({
+        params: `get-posts/${id}`,
+      }).then((response) => {
+        if ('data' in response && !response?.data?.error) {
+          form.setFieldsValue({
+            title: response?.data?.data?.title,
+            description: response?.data?.data?.description,
+            anonymous: response?.data?.data?.anonymous,
+          });
+        }
+      });
+    }
+  }, [id, getIssue, form]);
+
   return (
     <Container>
-      <Title level={3}>Crear nueva publicación</Title>
+      <Title level={3}>{id ? 'Editar' : 'Crear'} nueva publicación</Title>
       <Form
         form={form}
         initialValues={{
@@ -64,7 +102,7 @@ const PostForm = () => {
               Cancelar
             </Button>
             <Button type="primary" onClick={handleSubmit} loading={isLoading}>
-              Publicar post
+              {id ? 'Editar' : 'Crear'} post
             </Button>
           </Space>
         </Row>
